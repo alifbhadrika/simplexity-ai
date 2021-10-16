@@ -142,6 +142,7 @@ def eval(state : State, n_player: int) -> int: #obj func
     # get vertical
     # get diagonal+
     for x,y in bisadiisi:
+        if (x==-1): continue #gbs diisi
         if x-3>=0 and y+3<board.col:
             if board[x-1,y+1] == player1:
                 if board[x-2,y+2] == player1 and board[x-3,y+3] == player1:
@@ -174,6 +175,7 @@ def eval(state : State, n_player: int) -> int: #obj func
                     skor -= 7
     # get diagonal-
     for x,y in bisadiisi:
+        if (x==-1): continue #gbs diisi
         if x+3<board.row and y+3<board.col:
             if board[x+1,y+1] == player1:
                 if board[x+2,y+2] == player1 and board[x+3,y+3] == player1:
