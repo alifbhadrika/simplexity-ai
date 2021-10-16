@@ -86,7 +86,7 @@ def minimax(state : State, n_player:int, isMax, depth, a, b, maxDepth) -> int:
             sep = GameConstant.PLAYER1_SHAPE
 
     if(depth == maxDepth): # Deepest depth
-        return (eval(state)) #enter obj func here
+        return (eval(state, n_player)) #enter obj func here
 
     elif(depth < maxDepth):
         if(isMax):
@@ -127,5 +127,19 @@ def minimax(state : State, n_player:int, isMax, depth, a, b, maxDepth) -> int:
                             break
             return best
 
-def eval(state): #obj func
-    return random.randint(-1000,1000) 
+def eval(state : State, n_player: int) -> int: #obj func
+    board = state.board
+    players = state.players
+    player1_id = n_player
+    player2_id = int(not n_player)
+    player1 = players[player1_id]
+    player2 = players[player2_id]
+    player1_shape = player1.shape
+    player1_color = player1.color
+    player2_shape = player2.shape
+    player2_color = player2.color
+
+    # get horizontal
+    # get vertical
+    # get diagonal+
+    # get diagonal-
