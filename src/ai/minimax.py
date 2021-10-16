@@ -134,12 +134,93 @@ def eval(state : State, n_player: int) -> int: #obj func
     player2_id = int(not n_player)
     player1 = players[player1_id]
     player2 = players[player2_id]
-    player1_shape = player1.shape
-    player1_color = player1.color
-    player2_shape = player2.shape
-    player2_color = player2.color
+
+    bisadiisi = fillAble(state.board) # tuple(x, y)
+    skor = 0
 
     # get horizontal
     # get vertical
     # get diagonal+
+    for x,y in bisadiisi:
+        if x-3>=0 and y+3<board.col:
+            if board[x-1,y+1] == player1:
+                if board[x-2,y+2] == player1 and board[x-3,y+3] == player1:
+                    skor += 100
+                elif board[x-2,y+2] == player1:
+                    skor += 10
+                else:
+                    skor += 5
+            else:
+                if board[x-1,y+1].shape == player2.shape and board[x-2,y+2].shape == player2.shape and board[x-3,y+3].shape == player2.shape:
+                    skor -= 20
+                elif (board[x-1,y+1].shape == player1.shape and board[x-1,y+1].shape == player2.color and
+                    board[x-2,y+2].shape == player1.shape and board[x-2,y+3].shape == player2.color and
+                    board[x-3,y+3].shape == player1.shape and board[x-3,y+3].shape == player2.color):
+                    skor -= 7
+        if x+3<board.row and y-3>=0:
+            if board[x+1,y-1] == player1:
+                if board[x+2,y-2] == player1 and board[x+3,y-3] == player1:
+                    skor += 100
+                elif board[x+2,y-2] == player1:
+                    skor += 10
+                else:
+                    skor += 5
+            else:
+                if board[x+1,y-1].shape == player2.shape and board[x+2,y-2].shape == player2.shape and board[x+3,y-3].shape == player2.shape:
+                    skor -= 20
+                elif (board[x+1,y-1].shape == player1.shape and board[x+1,y-1].shape == player2.color and
+                    board[x+2,y-2].shape == player1.shape and board[x+2,y-3].shape == player2.color and
+                    board[x+3,y-3].shape == player1.shape and board[x+3,y-3].shape == player2.color):
+                    skor -= 7
     # get diagonal-
+    for x,y in bisadiisi:
+        if x+3<board.row and y+3<board.col:
+            if board[x+1,y+1] == player1:
+                if board[x+2,y+2] == player1 and board[x+3,y+3] == player1:
+                    skor += 100
+                elif board[x+2,y+2] == player1:
+                    skor += 10
+                else:
+                    skor += 5
+            else:
+                if board[x+1,y+1].shape == player2.shape and board[x+2,y+2].shape == player2.shape and board[x+3,y+3].shape == player2.shape:
+                    skor -= 20
+                elif (board[x+1,y+1].shape == player1.shape and board[x+1,y+1].shape == player2.color and
+                    board[x+2,y+2].shape == player1.shape and board[x+2,y+3].shape == player2.color and
+                    board[x+3,y+3].shape == player1.shape and board[x+3,y+3].shape == player2.color):
+                    skor -= 7
+        if x-3>=0 and y-3>=0:
+            if board[x-1,y-1] == player1:
+                if board[x-2,y-2] == player1 and board[x-3,y-3] == player1:
+                    skor += 100
+                elif board[x-2,y-2] == player1:
+                    skor += 10
+                else:
+                    skor += 5
+            else:
+                if board[x-1,y-1].shape == player2.shape and board[x-2,y-2].shape == player2.shape and board[x-3,y-3].shape == player2.shape:
+                    skor -= 20
+                elif (board[x-1,y-1].shape == player1.shape and board[x-1,y-1].shape == player2.color and
+                    board[x-2,y-2].shape == player1.shape and board[x-2,y-3].shape == player2.color and
+                    board[x-3,y-3].shape == player1.shape and board[x-3,y-3].shape == player2.color):
+                    skor -= 7
+    return skor
+
+def fillAble(board: Board) -> List[Tuple[int, int]]:
+    out = dict()
+    for x in range(board.row-1, -1, -1):
+        if len(out.keys()) == board.col:
+            break
+        for y in range(board.col):
+            if board[x,y] == Piece(ShapeConstant.BLANK, ColorConstant.BLACK):
+                if str(y) in out.keys(): 
+                    continue
+                out[str(y)] = x
+            else:
+                if x == 0:
+                    out[str(y)] = -1
+    out2 = []
+    for key in out.keys():
+        out2.append([out[key], int(key)])
+        
+    return out2
