@@ -154,9 +154,9 @@ def eval(state : State, n_player: int) -> int: #obj func
             else:
                 if board[x-1,y+1].shape == player2.shape and board[x-2,y+2].shape == player2.shape and board[x-3,y+3].shape == player2.shape:
                     skor -= 20
-                elif (board[x-1,y+1].shape == player1.shape and board[x-1,y+1].shape == player2.color and
-                    board[x-2,y+2].shape == player1.shape and board[x-2,y+3].shape == player2.color and
-                    board[x-3,y+3].shape == player1.shape and board[x-3,y+3].shape == player2.color):
+                elif (board[x-1,y+1].shape == player1.shape and board[x-1,y+1].color == player2.color and
+                    board[x-2,y+2].shape == player1.shape and board[x-2,y+3].color == player2.color and
+                    board[x-3,y+3].shape == player1.shape and board[x-3,y+3].color == player2.color):
                     skor -= 7
         if x+3<board.row and y-3>=0:
             if board[x+1,y-1] == player1:
@@ -169,9 +169,9 @@ def eval(state : State, n_player: int) -> int: #obj func
             else:
                 if board[x+1,y-1].shape == player2.shape and board[x+2,y-2].shape == player2.shape and board[x+3,y-3].shape == player2.shape:
                     skor -= 20
-                elif (board[x+1,y-1].shape == player1.shape and board[x+1,y-1].shape == player2.color and
-                    board[x+2,y-2].shape == player1.shape and board[x+2,y-3].shape == player2.color and
-                    board[x+3,y-3].shape == player1.shape and board[x+3,y-3].shape == player2.color):
+                elif (board[x+1,y-1].shape == player1.shape and board[x+1,y-1].color == player2.color and
+                    board[x+2,y-2].shape == player1.shape and board[x+2,y-3].color == player2.color and
+                    board[x+3,y-3].shape == player1.shape and board[x+3,y-3].color == player2.color):
                     skor -= 7
     # get diagonal-
     for x,y in bisadiisi:
@@ -187,9 +187,9 @@ def eval(state : State, n_player: int) -> int: #obj func
             else:
                 if board[x+1,y+1].shape == player2.shape and board[x+2,y+2].shape == player2.shape and board[x+3,y+3].shape == player2.shape:
                     skor -= 20
-                elif (board[x+1,y+1].shape == player1.shape and board[x+1,y+1].shape == player2.color and
-                    board[x+2,y+2].shape == player1.shape and board[x+2,y+3].shape == player2.color and
-                    board[x+3,y+3].shape == player1.shape and board[x+3,y+3].shape == player2.color):
+                elif (board[x+1,y+1].shape == player1.shape and board[x+1,y+1].color == player2.color and
+                    board[x+2,y+2].shape == player1.shape and board[x+2,y+3].color == player2.color and
+                    board[x+3,y+3].shape == player1.shape and board[x+3,y+3].color == player2.color):
                     skor -= 7
         if x-3>=0 and y-3>=0:
             if board[x-1,y-1] == player1:
@@ -202,9 +202,9 @@ def eval(state : State, n_player: int) -> int: #obj func
             else:
                 if board[x-1,y-1].shape == player2.shape and board[x-2,y-2].shape == player2.shape and board[x-3,y-3].shape == player2.shape:
                     skor -= 20
-                elif (board[x-1,y-1].shape == player1.shape and board[x-1,y-1].shape == player2.color and
-                    board[x-2,y-2].shape == player1.shape and board[x-2,y-3].shape == player2.color and
-                    board[x-3,y-3].shape == player1.shape and board[x-3,y-3].shape == player2.color):
+                elif (board[x-1,y-1].shape == player1.shape and board[x-1,y-1].color == player2.color and
+                    board[x-2,y-2].shape == player1.shape and board[x-2,y-3].color == player2.color and
+                    board[x-3,y-3].shape == player1.shape and board[x-3,y-3].color == player2.color):
                     skor -= 7
     return skor
 
