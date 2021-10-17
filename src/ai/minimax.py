@@ -139,7 +139,63 @@ def eval(state : State, n_player: int) -> int: #obj func
     skor = 0
 
     # get horizontal
+    for x,y in bisadiisi:
+        if (x==-1): continue #gbs diisi
+
+        #cek kanan
+        if y+3<board.col:
+            if board[x,y+1] == player1:
+                if board[x,y+2] == player1 and board[x,y+3] == player1:
+                    skor += 100
+                elif board[x,y+2] == player1:
+                    skor += 10
+                else:
+                    skor += 5
+            else:
+                if board[x,y+1].shape == player2.shape and board[x,y+2].shape == player2.shape and board[x,y+3].shape == player2.shape:
+                    skor -= 20
+                elif (board[x,y+1].shape == player1.shape and board[x,y+1].color == player2.color and
+                    board[x,y+2].shape == player1.shape and board[x,y+3].color == player2.color and
+                    board[x,y+3].shape == player1.shape and board[x,y+3].color == player2.color):
+                    skor -= 7
+        #cek kiri
+        if y-3>=0:
+            if board[x,y-1] == player1:
+                if board[x,y-2] == player1 and board[x,y-3] == player1:
+                    skor += 100
+                elif board[x,y-2] == player1:
+                    skor += 10
+                else:
+                    skor += 5
+            else:
+                if board[x,y-1].shape == player2.shape and board[x,y-2].shape == player2.shape and board[x,y-3].shape == player2.shape:
+                    skor -= 20
+                elif (board[x,y-1].shape == player1.shape and board[x,y-1].color == player2.color and
+                    board[x,y-2].shape == player1.shape and board[x,y-3].color == player2.color and
+                    board[x,y-3].shape == player1.shape and board[x,y-3].color == player2.color):
+                    skor -= 7
+
     # get vertical
+    for x,y in bisadiisi:
+        if(x==-1): continue
+        #cek bawah
+        if x+3<board.row:
+            if board[x+1,y] == player1:
+                if board[x+2,y] == player1 and board[x+3,y] == player1:
+                    skor += 100
+                elif board[x+2,y] == player1:
+                    skor += 10
+                else:
+                    skor += 5
+            else:
+                if board[x+1,y].shape == player2.shape and board[x+2,y].shape == player2.shape and board[x+3,y].shape == player2.shape:
+                    skor -= 20
+                elif (board[x+1,y].shape == player1.shape and board[x+1,y].color == player2.color and
+                    board[x+2,y].shape == player1.shape and board[x+2,y].color == player2.color and
+                    board[x+3,y].shape == player1.shape and board[x+3,y].color == player2.color):
+                    skor -= 7
+
+
     # get diagonal+
     for x,y in bisadiisi:
         if (x==-1): continue #gbs diisi
