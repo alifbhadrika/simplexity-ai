@@ -11,6 +11,6 @@ def dumper(path_b1, path_b2, path_pvb):
 
 if __name__ == '__main__':
     bot1_filename = 'nitra59_minimax.pkl' 
-    bot2_filename = 'random-2.pkl'
+    bot2_filename = 'nitra59_localsearch.pkl'
     pvp_bot_filename = 'nitra59_minimax.pkl'
     dumper(bot1_filename, bot2_filename, pvp_bot_filename)

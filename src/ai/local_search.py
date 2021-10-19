@@ -17,14 +17,14 @@ class LocalSearch:
 
         curr = state
         board = curr.board
-        bestMove = (-1,-1)
+
         
         succs = fillAble(board)
         
         #generate col for best move
         foundSucc = False
         i = 0
-        while(time() < self.thinking_time and i < len(succs) and not foundSucc):
+        while(i < len(succs) and not foundSucc):
             succValue = eval(curr, n_player, succs[i])
             if (succValue > self.currValue):
                 foundSucc = True
@@ -45,12 +45,17 @@ class LocalSearch:
                 sep = GameConstant.PLAYER2_SHAPE
             elif(state.players[n_player].quota[GameConstant.PLAYER2_SHAPE] == 0 and state.players[n_player].quota[GameConstant.PLAYER1_SHAPE] > 0 ):
                 sep = GameConstant.PLAYER1_SHAPE
-        
+    
         if (foundSucc):
-            bestMove[0] = str(succs[i][1]) #col
-            bestMove[1] = sep #shape
+            bestMove = (succs[i][1], sep)
 
+        #buat tes masuk foundsucc apa kaga dan ngecek eval tu ngasilin berapa aja si
+        s = 0
+        for succ in succs:
+            s += eval(curr, n_player, succ)
+        bestMove = (s, sep)
         return bestMove
+
 
 
 def fillAble(board: Board) -> List[Tuple[int, int]]:
