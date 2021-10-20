@@ -10,7 +10,7 @@ from typing import Tuple, List
 def is_terminal(state: State) -> bool:
     return is_win(state.board) is not None or is_full(state.board)
 
-def minimax(state : State, n_player:int, isMax, depth, a, b, maxDepth, FirstPlayer) -> int:
+def minimax(state : State, n_player:int, isMax, depth, a, b, maxDepth, FirstPlayer,tt) -> int:
     '''
     Minimax Alpha Beta Pruning Algo
     state : game state
@@ -23,74 +23,95 @@ def minimax(state : State, n_player:int, isMax, depth, a, b, maxDepth, FirstPlay
     '''
     # Greedy Shape Selection - kalo mau ubah ini ubah aja, biar ngesimulasiin 2 jenis shape per parent
     # Buat skrg cuma prioritasin generate move buat shape preferensi tiap player sampe shape itu abis, baru ganti shape
-    if(n_player == 0):
-        nextp = 1
-        if(state.players[n_player].quota[GameConstant.PLAYER1_SHAPE] > 0):
-            sep = GameConstant.PLAYER1_SHAPE
-        elif(state.players[n_player].quota[GameConstant.PLAYER1_SHAPE] == 0 and state.players[n_player].quota[GameConstant.PLAYER2_SHAPE] > 0 ):
-            sep = GameConstant.PLAYER2_SHAPE
-    elif(n_player == 1):
-        nextp = 0
-        if(state.players[n_player].quota[GameConstant.PLAYER2_SHAPE] > 0):
-            sep = GameConstant.PLAYER2_SHAPE
-        elif(state.players[n_player].quota[GameConstant.PLAYER2_SHAPE] == 0 and state.players[n_player].quota[GameConstant.PLAYER1_SHAPE] > 0 ):
-            sep = GameConstant.PLAYER1_SHAPE
+    found = False
+    lastIt = False
+    while(True):
+        if(n_player == 0):
+            nextp = 1
+            if(state.players[n_player].quota[GameConstant.PLAYER1_SHAPE] > 0):
+                sep = GameConstant.PLAYER1_SHAPE
+            elif(state.players[n_player].quota[GameConstant.PLAYER1_SHAPE] == 0 and state.players[n_player].quota[GameConstant.PLAYER2_SHAPE] > 0 ):
+                sep = GameConstant.PLAYER2_SHAPE
+        elif(n_player == 1):
+            nextp = 0
+            if(state.players[n_player].quota[GameConstant.PLAYER2_SHAPE] > 0):
+                sep = GameConstant.PLAYER2_SHAPE
+            elif(state.players[n_player].quota[GameConstant.PLAYER2_SHAPE] == 0 and state.players[n_player].quota[GameConstant.PLAYER1_SHAPE] > 0 ):
+                sep = GameConstant.PLAYER1_SHAPE
 
-    if(depth == maxDepth or is_terminal(state)): # Deepest depth
-        if(depth != maxDepth):
-            winner = is_win(state.board)
-            if(winner[1] == state.players[FirstPlayer].color) : # piece player
-                return 999999
-            elif (winner[1] == state.players[(FirstPlayer+1) % 2].color): # piece lawan
-                return -999999
-            else:
-                return 0
-        else:   # kalau maxDepth
-            return (eval(state, FirstPlayer)) #enter obj func here
+        if(depth == maxDepth or is_terminal(state)): # Deepest depth
+            if(depth != maxDepth):
+                winner = is_win(state.board)
+                if(winner[1] == state.players[FirstPlayer].color) : # piece player
+                    return 999999
+                elif (winner[1] == state.players[(FirstPlayer+1) % 2].color): # piece lawan
+                    return -999999
+                else:
+                    return 0
+            else:   # kalau maxDepth
+                return (eval(state, FirstPlayer)) #enter obj func here
 
-    elif(depth < maxDepth):
-        prune = False
-        if(isMax):
-            best = -1000
-            for c in range(state.board.col): #Check Available Move
-                if(prune):
-                    break
-                for r in range(state.board.row - 1,-1,-1):
-                    if((state.board[r, c].shape == ShapeConstant.BLANK and r == state.board.row - 1) or (state.board[r, c].shape == ShapeConstant.BLANK and state.board[r + 1,c].shape != ShapeConstant.BLANK and r<state.board.row - 1 )):
-                        piece = Piece(sep, GameConstant.PLAYER_COLOR[n_player])
-                        ns = deepcopy(state)
-                        ns.board.set_piece(r,c,piece)
-                        ns.players[n_player].quota[sep] -= 1
-                        tmp = minimax(ns,nextp,False,depth + 1,a,b,maxDepth, FirstPlayer)
-                        if(tmp >= best):
-                            best = tmp
-                        a = max(a,best)
-                        ns.players[n_player].quota[sep] += 1
-                        ns.board.set_piece(r,c,ShapeConstant.BLANK)
-                        if(b <= a): #edit this
-                            prune = True
-            return best
+        elif(depth < maxDepth):
+            prune = False
+            if(isMax):
+                best = -1000
+                for c in range(state.board.col): #Check Available Move
+                    if(prune):
+                        break
+                    for r in range(state.board.row - 1,-1,-1):
+                        if((state.board[r, c].shape == ShapeConstant.BLANK and r == state.board.row - 1) or (state.board[r, c].shape == ShapeConstant.BLANK and state.board[r + 1,c].shape != ShapeConstant.BLANK and r<state.board.row - 1 )):
+                            piece = Piece(sep, GameConstant.PLAYER_COLOR[n_player])
+                            ns = deepcopy(state)
+                            ns.board.set_piece(r,c,piece)
+                            ns.players[n_player].quota[sep] -= 1
+                            if(time() >= tt):
+                                break
+                            tmp = minimax(ns,nextp,False,depth + 1,a,b,maxDepth, FirstPlayer,tt)
+                            if(tmp >= best):
+                                best = tmp
+                                found = True
+                            a = max(a,best)
+                            ns.players[n_player].quota[sep] += 1
+                            ns.board.set_piece(r,c,ShapeConstant.BLANK)
+                            if(b <= a): #edit this
+                                prune = True
+                        if(c == state.board.col - 1 and r == 0):
+                            lastIt = True
+                return best
 
-        else : # minimizing
-            best = 1000
-            for c in range(state.board.col):
-                if(prune):
-                    break
-                for r in range(state.board.row - 1,-1,-1):
-                    if((state.board[r, c].shape == ShapeConstant.BLANK and r == state.board.row - 1) or (state.board[r, c].shape == ShapeConstant.BLANK and state.board[r + 1,c].shape != ShapeConstant.BLANK and r<state.board.row - 1 )):
-                        piece = Piece(sep, GameConstant.PLAYER_COLOR[n_player])
-                        ns = deepcopy(state)
-                        ns.board.set_piece(r,c,piece)
-                        ns.players[n_player].quota[sep] -= 1
-                        tmp = minimax(ns,nextp,True,depth + 1,a,b,maxDepth, FirstPlayer)
-                        if(tmp <= best):
-                            best = tmp
-                        b = min(b,best)
-                        ns.players[n_player].quota[sep] += 1
-                        ns.board.set_piece(r,c,ShapeConstant.BLANK)
-                        if(b <= a):
-                            prune = True
-            return best
+            else : # minimizing
+                best = 1000
+                for c in range(state.board.col):
+                    if(prune):
+                        break
+                    for r in range(state.board.row - 1,-1,-1):
+                        if((state.board[r, c].shape == ShapeConstant.BLANK and r == state.board.row - 1) or (state.board[r, c].shape == ShapeConstant.BLANK and state.board[r + 1,c].shape != ShapeConstant.BLANK and r<state.board.row - 1 )):
+                            piece = Piece(sep, GameConstant.PLAYER_COLOR[n_player])
+                            ns = deepcopy(state)
+                            ns.board.set_piece(r,c,piece)
+                            ns.players[n_player].quota[sep] -= 1
+                            if(time() >= tt):
+                                break
+                            tmp = minimax(ns,nextp,True,depth + 1,a,b,maxDepth, FirstPlayer,tt)
+                            if(tmp <= best):
+                                best = tmp
+                                found = True
+                            b = min(b,best)
+                            ns.players[n_player].quota[sep] += 1
+                            ns.board.set_piece(r,c,ShapeConstant.BLANK)
+                            if(b <= a):
+                                prune = True
+                        if(c == state.board.col - 1 and r == 0):
+                            lastIt = True
+                return best
+        if(time() >= tt or lastIt == True):
+            break
+
+    if(not found): #Random move
+        best = random.randint(-1000,1000)
+        # print("Called Random")
+    return best
+        
 
 def eval(state : State, n_player: int) -> int: #obj func
     board = state.board
@@ -247,30 +268,32 @@ class MinimaxGroup44:
 
     def find(self, state: State, n_player: int, thinking_time: float) -> Tuple[str, str]:
         self.thinking_time = time() + thinking_time
-        # best_movement = (random.randint(0, state.board.col), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE])) #minimax algorithm
-        # return best_movement
-
-        best = -1000 #init
-        bestmove = (-1,-1)
-
-        # Greedy Shape Selection - kalo mau ubah ini ubah aja, biar ngesimulasiin 2 jenis shape per parent
-        # Buat skrg cuma prioritasin generate move buat shape preferensi tiap player sampe shape itu abis, baru ganti shape 
-        if(n_player == 0):
-            nextp = 1
-            if(state.players[n_player].quota[GameConstant.PLAYER1_SHAPE] > 0):
-                sep = GameConstant.PLAYER1_SHAPE
-            elif(state.players[n_player].quota[GameConstant.PLAYER1_SHAPE] == 0 and state.players[n_player].quota[GameConstant.PLAYER2_SHAPE] > 0 ):
-                sep = GameConstant.PLAYER2_SHAPE
-        elif(n_player == 1):
-            nextp = 0
-            if(state.players[n_player].quota[GameConstant.PLAYER2_SHAPE] > 0):
-                sep = GameConstant.PLAYER2_SHAPE
-            elif(state.players[n_player].quota[GameConstant.PLAYER2_SHAPE] == 0 and state.players[n_player].quota[GameConstant.PLAYER1_SHAPE] > 0 ):
-                sep = GameConstant.PLAYER1_SHAPE
-
         lastIt = False
         found = False
-        while(not lastIt and time() < self.thinking_time):
+        while(True):
+            # best_movement = (random.randint(0, state.board.col), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE])) #minimax algorithm
+            # return best_movement
+
+            best = -1000 #init
+            bestmove = (-1,-1)
+
+            # Greedy Shape Selection - kalo mau ubah ini ubah aja, biar ngesimulasiin 2 jenis shape per parent
+            # Buat skrg cuma prioritasin generate move buat shape preferensi tiap player sampe shape itu abis, baru ganti shape 
+            if(n_player == 0):
+                nextp = 1
+                if(state.players[n_player].quota[GameConstant.PLAYER1_SHAPE] > 0):
+                    sep = GameConstant.PLAYER1_SHAPE
+                elif(state.players[n_player].quota[GameConstant.PLAYER1_SHAPE] == 0 and state.players[n_player].quota[GameConstant.PLAYER2_SHAPE] > 0 ):
+                    sep = GameConstant.PLAYER2_SHAPE
+            elif(n_player == 1):
+                nextp = 0
+                if(state.players[n_player].quota[GameConstant.PLAYER2_SHAPE] > 0):
+                    sep = GameConstant.PLAYER2_SHAPE
+                elif(state.players[n_player].quota[GameConstant.PLAYER2_SHAPE] == 0 and state.players[n_player].quota[GameConstant.PLAYER1_SHAPE] > 0 ):
+                    sep = GameConstant.PLAYER1_SHAPE
+
+            lastIt = False
+            found = False
             for c in range(state.board.col): #Check Available Move
                 for r in range(state.board.row - 1,-1,-1):
                     if((state.board[r, c].shape == ShapeConstant.BLANK and r == state.board.row - 1) or (state.board[r, c].shape == ShapeConstant.BLANK and state.board[r + 1,c].shape != ShapeConstant.BLANK and r < state.board.row - 1 )) :
@@ -278,7 +301,9 @@ class MinimaxGroup44:
                         ns = deepcopy(state)
                         ns.board.set_piece(r,c,piece)
                         ns.players[n_player].quota[sep] -= 1
-                        tmp = minimax(ns,nextp,False,0,-1000,1000,1, n_player)
+                        if(time() >= self.thinking_time):
+                            break
+                        tmp = minimax(ns,nextp,False,0,-1000,1000,4, n_player,self.thinking_time)
                         if(tmp >= best):
                             best = tmp
                             bestmove = (c,sep)
@@ -287,10 +312,14 @@ class MinimaxGroup44:
                         ns.board.set_piece(r,c,ShapeConstant.BLANK)
                     if(c == state.board.col - 1 and r == 0):
                         lastIt = True
-
+                        break
+            if(lastIt or time()>= self.thinking_time):
+                break
         if(not lastIt and not found): #Random move
             bestmove = (random.randint(0, state.board.col - 1), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE]))
-            # print("Called Random")
+            print("Called Random")
+        elif(not lastIt and found):
+            print("g sampe akhir")
         return bestmove
 
 import random
