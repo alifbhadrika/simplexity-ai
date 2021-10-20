@@ -21,8 +21,8 @@ def minimax(state : State, n_player:int, isMax, depth, a, b, maxDepth, FirstPlay
     b : beta constraint (minimizer current best value)
     maxDepth : max search depth
     '''
-    # Greedy Shape Selection - kalo mau ubah ini ubah aja, biar ngesimulasiin 2 jenis shape per parent
-    # Buat skrg cuma prioritasin generate move buat shape preferensi tiap player sampe shape itu abis, baru ganti shape
+    # Greedy Shape Selection
+    # Prioritasin generate move buat shape preferensi tiap player sampe shape itu abis, baru ganti shape
     found = False
     lastIt = False
     while(True):
@@ -109,7 +109,6 @@ def minimax(state : State, n_player:int, isMax, depth, a, b, maxDepth, FirstPlay
 
     if(not found): #Random move
         best = random.randint(-1000,1000)
-        # print("Called Random")
     return best
         
 
@@ -121,7 +120,6 @@ def eval(state : State, n_player: int) -> int: #obj func
     player1 = players[player1_id]
     player2 = players[player2_id]
 
-    # bisadiisi = fillAble(state.board) # tuple(x, y)
     skor = 0
 
     # horizontal
@@ -236,25 +234,6 @@ def eval(state : State, n_player: int) -> int: #obj func
                         skor -= 50
     return skor
 
-def fillAble(board: Board) -> List[Tuple[int, int]]:
-    out = dict()
-    for x in range(board.row-1, -1, -1):
-        if len(out.keys()) == board.col:
-            break
-        for y in range(board.col):
-            if board[x,y] == Piece(ShapeConstant.BLANK, ColorConstant.BLACK):
-                if str(y) in out.keys(): 
-                    continue
-                out[str(y)] = x
-            else:
-                if x == 0:
-                    out[str(y)] = -1
-    out2 = []
-    for key in out.keys():
-        out2.append([out[key], int(key)])
-        
-    return out2
-
 class MinimaxGroup44:
     def __init__(self):
         pass
@@ -264,14 +243,11 @@ class MinimaxGroup44:
         lastIt = False
         found = False
         while(True):
-            # best_movement = (random.randint(0, state.board.col), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE])) #minimax algorithm
-            # return best_movement
-
             best = -1000 #init
             bestmove = (-1,-1)
 
-            # Greedy Shape Selection - kalo mau ubah ini ubah aja, biar ngesimulasiin 2 jenis shape per parent
-            # Buat skrg cuma prioritasin generate move buat shape preferensi tiap player sampe shape itu abis, baru ganti shape 
+            # Greedy Shape Selection 
+            # Prioritasin generate move buat shape preferensi tiap player sampe shape itu abis, baru ganti shape 
             if(n_player == 0):
                 nextp = 1
                 if(state.players[n_player].quota[GameConstant.PLAYER1_SHAPE] > 0):
@@ -310,9 +286,6 @@ class MinimaxGroup44:
                 break
         if(not lastIt and not found): #Random move
             bestmove = (random.randint(0, state.board.col - 1), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE]))
-            print("Called Random")
-        # elif(not lastIt and found):
-        #     print("g sampe akhir")
         return bestmove
 
 import random
