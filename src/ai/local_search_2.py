@@ -8,7 +8,7 @@ from src.utility import *
 from typing import Tuple, List
 
 
-class LocalSearch:
+class LocalSearchGroup44:
     def __init__(self):
         self.currValue = 0
 
@@ -101,9 +101,9 @@ def eval(state : State, n_player: int, nextMove : Tuple[int, int]) -> int: #heur
     player1 = players[player1_id]
     player2 = players[player2_id]
 
-    bisadiisi = []
-    bisadiisi.append(nextMove)
-    skor = 0
+    # bisadiisi = []
+    # bisadiisi.append(nextMove)
+    # skor = 0
 
     isFull = is_full(state.board)
     if (isFull): return 0
