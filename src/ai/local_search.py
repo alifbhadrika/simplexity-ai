@@ -15,7 +15,7 @@ class LocalSearchGroup44:
 
     def find(self, state: State, n_player: int, thinking_time: float) -> Tuple[str, str]:
         self.thinking_time = time() + thinking_time
-        timeout = self.thinking_time >= time()
+        timeout = self.thinking_time < time()
         temp = self.currValue
 
         curr = state
@@ -33,7 +33,7 @@ class LocalSearchGroup44:
             succValue = eval(curr, n_player, succs[i])
             neighbor.append([succValue, succs[i][1], succs[i][0]])
             i+=1
-            timeout = self.thinking_time >= time()
+            timeout = self.thinking_time < time()
         
         neighbor.sort(key=lambda x: x[0])
 
@@ -69,6 +69,7 @@ class LocalSearchGroup44:
             bestMove = (neighbor[i][1], sep)
         if (timeout):
             bestMove = (random.randint(0, board.col-1), sep)
+            # print("calledrandom")
         
         if self.currValue == 696969:
             self.currValue = temp
