@@ -132,7 +132,7 @@ def eval(state : State, n_player: int, nextMove : Tuple[int, int]) -> int: #heur
             else:
                 horizontal1.append(50)
         else: # player2
-            if board[x,y+1] == player2:
+            if board[x,y+1] == player2 or board[x,y+1].color == player2.color:
                 if board[x,y+2].color == player2.color or board[x,y+2].shape == player2.shape:
                     if board[x,y+3].color == player2.color or board[x,y+3].shape == player2.shape:
                         return 696969
@@ -151,7 +151,7 @@ def eval(state : State, n_player: int, nextMove : Tuple[int, int]) -> int: #heur
             else:
                 horizontal2.append(50)
         else: # player2
-            if board[x,y-1] == player2:
+            if board[x,y-1] == player2 or board[x,y-1].color == player2.color:
                 if board[x,y-2].color == player2.color or board[x,y-2].shape == player2.shape:
                     if board[x,y-3].color == player2.color or board[x,y-3].shape == player2.shape:
                         return 696969
@@ -189,7 +189,7 @@ def eval(state : State, n_player: int, nextMove : Tuple[int, int]) -> int: #heur
             else:
                 vertikalval = 50
         else:
-            if board[x+1, y] == player2:
+            if board[x+1, y] == player2 or board[x+1, y].color == player2.color:
                 if board[x+2,y].color == player2.color or board[x+2,y].shape == player2.shape:
                     if board[x+3,y].color == player2.color or board[x+3,y].shape == player2.shape:
                         return 696969
@@ -210,7 +210,7 @@ def eval(state : State, n_player: int, nextMove : Tuple[int, int]) -> int: #heur
             else:
                 diagonalplus1.append(50)
         else: # player2
-            if board[x-1, y+1] == player2:
+            if board[x-1, y+1] == player2 or board[x-1, y+1].color == player2.color:
                 if board[x-2,y+2].color == player2.color or board[x-2,y+2].shape == player2.shape:
                     if board[x-3,y+3].color == player2.color or board[x-3,y+3].shape == player2.shape:
                         return 696969
@@ -228,7 +228,7 @@ def eval(state : State, n_player: int, nextMove : Tuple[int, int]) -> int: #heur
             else:
                 diagonalplus2.append(50)
         else: # player2
-            if board[x+1, y-1] == player2:
+            if board[x+1, y-1] == player2 or board[x+1, y-1].color == player2.color:
                 if board[x+2,y-2].color == player2.color or board[x+2,y-2].shape == player2.shape:
                     if board[x+3,y-3].color == player2.color or board[x+3,y-3].shape == player2.shape:
                         return 696969
@@ -266,7 +266,7 @@ def eval(state : State, n_player: int, nextMove : Tuple[int, int]) -> int: #heur
             else:
                 diagonalmin1.append(50)
         else: # player2
-            if board[x+1, y+1] == player2:
+            if board[x+1, y+1] == player2 or board[x+1, y+1].color == player2.color:
                 if board[x+2,y+2].color == player2.color or board[x+2,y+2].shape == player2.shape:
                     if board[x+3,y+3].color == player2.color or board[x+3,y+3].shape == player2.shape:
                         return 696969
@@ -285,7 +285,7 @@ def eval(state : State, n_player: int, nextMove : Tuple[int, int]) -> int: #heur
             else:
                 diagonalmin2.append(50)
         else: # player2
-            if board[x-1, y-1] == player2:
+            if board[x-1, y-1] == player2 or board[x-1, y-1].color == player2.color:
                 if board[x-2,y-2].color == player2.color or board[x-2,y-2].shape == player2.shape:
                     if board[x-3,y-3].color == player2.color or board[x-3,y-3].shape == player2.shape:
                         return 696969
