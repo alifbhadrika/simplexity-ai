@@ -6,6 +6,7 @@ from src.model import *
 from src.utility import *
 
 from typing import Tuple, List
+from copy import deepcopy
 
 
 class LocalSearchGroup44:
@@ -34,13 +35,22 @@ class LocalSearchGroup44:
             i+=1
         
         neighbor.sort(key=lambda x: x[0])
+        print(temp)
         print(neighbor)
 
         succValue = neighbor[-1][0]
 
-        if (succValue > self.currValue and neighbor[-1][2] != -1):
+        if (succValue >= self.currValue and neighbor[-1][2] != -1):
             foundSucc = True
             self.currValue = succValue
+            i = -1
+        else:
+            foundSucc = True
+            i = len(neighbor)-2
+            while (i >= 0 and neighbor[i][2] == -1):
+                i-=1
+            self.currValue = neighbor[i][0]
+
    
         #generate shape for best move
         if(n_player == 0):
@@ -57,7 +67,7 @@ class LocalSearchGroup44:
                 sep = GameConstant.PLAYER1_SHAPE
     
         if (foundSucc):
-            bestMove = (neighbor[-1][1], sep)
+            bestMove = (neighbor[i][1], sep)
         else:
             bestMove = (random.randint(0, board.col-1), sep)
         
@@ -101,21 +111,20 @@ def eval(state : State, n_player: int, nextMove : Tuple[int, int]) -> int: #heur
     player1 = players[player1_id]
     player2 = players[player2_id]
 
-    # bisadiisi = []
-    # bisadiisi.append(nextMove)
-    # skor = 0
+    [x,y] = nextMove
 
-    isFull = is_full(state.board)
+    boardjadijadian = deepcopy(board)
+    boardjadijadian.set_piece(x, y, player1)
+
+    isFull = is_full(boardjadijadian)
     if (isFull): return 0
 
-    isWin = is_win(state.board)
+    isWin = is_win(boardjadijadian)
     if isWin is not None:
-        if isWin[0] == player1.shape and isWin[1] == player1.color:
+        if Piece(isWin[0], isWin[1]) == player1:
             return 9999999999999999
 
     out = []
-
-    [x,y] = nextMove
 
     horizontal1 = [0]
     horizontal2 = [0]
@@ -129,11 +138,14 @@ def eval(state : State, n_player: int, nextMove : Tuple[int, int]) -> int: #heur
             else:
                 horizontal1.append(50)
         else: # player2
-            if board[x,y+2].color == player2.color or board[x,y+2].shape == player2.shape:
-                if board[x,y+3].color == player2.color or board[x,y+3].shape == player2.shape:
-                    return 696969
+            if board[x,y+1] == player2:
+                if board[x,y+2].color == player2.color or board[x,y+2].shape == player2.shape:
+                    if board[x,y+3].color == player2.color or board[x,y+3].shape == player2.shape:
+                        return 696969
+                    else:
+                        horizontal1.append(150)
                 else:
-                    horizontal1.append(150)
+                    horizontal1.append(50)
             else:
                 horizontal1.append(50)
     
@@ -145,11 +157,14 @@ def eval(state : State, n_player: int, nextMove : Tuple[int, int]) -> int: #heur
             else:
                 horizontal2.append(50)
         else: # player2
-            if board[x,y-2].color == player2.color or board[x,y-2].shape == player2.shape:
-                if board[x,y-3].color == player2.color or board[x,y-3].shape == player2.shape:
-                    return 696969
+            if board[x,y-1] == player2:
+                if board[x,y-2].color == player2.color or board[x,y-2].shape == player2.shape:
+                    if board[x,y-3].color == player2.color or board[x,y-3].shape == player2.shape:
+                        return 696969
+                    else:
+                        horizontal2.append(150)
                 else:
-                    horizontal2.append(150)
+                    horizontal2.append(50)
             else:
                 horizontal2.append(50)
 
@@ -159,16 +174,16 @@ def eval(state : State, n_player: int, nextMove : Tuple[int, int]) -> int: #heur
     
     #cek antara 1
     if y-1>=0 and y+2<board.col:
-        if (board[x,y-1].color == player2.color
-            and board[x,y+1].color == player2.color
-            and board[x,y+2].color == player2.color):
+        if ((board[x,y-1].color == player2.color or board[x,y-1].shape == player2.shape)
+            and (board[x,y+1].color == player2.color or board[x,y+1].shape == player2.shape)
+            and (board[x,y+2].color == player2.color or board[x,y+2].shape == player2.shape)):
             return 696969
     
     #cek antara 2
     if y-2>=0 and y+1<board.col:
-        if (board[x,y-2].color == player2.color
-            and board[x,y-1].color == player2.color
-            and board[x,y+1].color == player2.color):
+        if ((board[x,y-2].color == player2.color or board[x,y-2].shape == player2.shape)
+            and (board[x,y-1].color == player2.color or board[x,y-1].shape == player2.shape)
+            and (board[x,y+1].color == player2.color or board[x,y+1].shape == player2.shape)):
             return 696969
 
     vertikalval = 0
@@ -180,11 +195,14 @@ def eval(state : State, n_player: int, nextMove : Tuple[int, int]) -> int: #heur
             else:
                 vertikalval = 50
         else:
-            if board[x+2,y].color == player2.color or board[x+2,y].shape == player2.shape:
-                if board[x+3,y].color == player2.color or board[x+3,y].shape == player2.shape:
-                    return 696969
+            if board[x+1, y] == player2:
+                if board[x+2,y].color == player2.color or board[x+2,y].shape == player2.shape:
+                    if board[x+3,y].color == player2.color or board[x+3,y].shape == player2.shape:
+                        return 696969
+                    else:
+                        vertikalval = 150
                 else:
-                    vertikalval = 150
+                    vertikalval = 50
             else:
                 vertikalval = 50
 
@@ -198,11 +216,14 @@ def eval(state : State, n_player: int, nextMove : Tuple[int, int]) -> int: #heur
             else:
                 diagonalplus1.append(50)
         else: # player2
-            if board[x-2,y+2].color == player2.color or board[x-2,y+2].shape == player2.shape:
-                if board[x-3,y+3].color == player2.color or board[x-3,y+3].shape == player2.shape:
-                    return 696969
+            if board[x-1, y+1] == player2:
+                if board[x-2,y+2].color == player2.color or board[x-2,y+2].shape == player2.shape:
+                    if board[x-3,y+3].color == player2.color or board[x-3,y+3].shape == player2.shape:
+                        return 696969
+                    else:
+                        diagonalplus1.append(150)
                 else:
-                    diagonalplus1.append(150)
+                    diagonalplus1.append(50)
             else:
                 diagonalplus1.append(50)
 
@@ -213,11 +234,14 @@ def eval(state : State, n_player: int, nextMove : Tuple[int, int]) -> int: #heur
             else:
                 diagonalplus2.append(50)
         else: # player2
-            if board[x+2,y-2].color == player2.color or board[x+2,y-2].shape == player2.shape:
-                if board[x+3,y-3].color == player2.color or board[x+3,y-3].shape == player2.shape:
-                    return 696969
+            if board[x+1, y-1] == player2:
+                if board[x+2,y-2].color == player2.color or board[x+2,y-2].shape == player2.shape:
+                    if board[x+3,y-3].color == player2.color or board[x+3,y-3].shape == player2.shape:
+                        return 696969
+                    else:
+                        diagonalplus2.append(150)
                 else:
-                    diagonalplus2.append(150)
+                    diagonalplus2.append(50)
             else:
                 diagonalplus2.append(50)
 
@@ -227,15 +251,15 @@ def eval(state : State, n_player: int, nextMove : Tuple[int, int]) -> int: #heur
 
     # cek antara 1
     if y-2>=0 and x+2<board.row and y+1<board.col and x-1>=0:
-        if (board[x-1,y+1].color == player2.color
-            and board[x+1,y-1].color == player2.color
-            and board[x+2,y-2].color == player2.color):
+        if ((board[x-1,y+1].color == player2.color or board[x-1,y+1].shape == player2.shape)
+            and (board[x+1,y-1].color == player2.color or board[x+1,y-1].shape == player2.shape)
+            and (board[x+2,y-2].color == player2.color or board[x+2,y-2].shape == player2.shape)):
             return 696969
     # cek antara 2
     if y-1>=0 and x+1<board.row and y+2<board.col and x-2>=0:
-        if (board[x+1,y-1].color == player2.color
-            and board[x-1,y+1].color == player2.color
-            and board[x-2,y+2].color == player2.color):
+        if ((board[x+1,y-1].color == player2.color or board[x+1,y-1].shape == player2.shape)
+            and (board[x-1,y+1].color == player2.color or board[x-1,y+1].shape == player2.shape)
+            and (board[x-2,y+2].color == player2.color or board[x-2,y+2].shape == player2.shape)):
             return 696969
 
     diagonalmin1 = [0]
@@ -248,11 +272,14 @@ def eval(state : State, n_player: int, nextMove : Tuple[int, int]) -> int: #heur
             else:
                 diagonalmin1.append(50)
         else: # player2
-            if board[x+2,y+2].color == player2.color or board[x+2,y+2].shape == player2.shape:
-                if board[x+3,y+3].color == player2.color or board[x+3,y+3].shape == player2.shape:
-                    return 696969
+            if board[x+1, y+1] == player2:
+                if board[x+2,y+2].color == player2.color or board[x+2,y+2].shape == player2.shape:
+                    if board[x+3,y+3].color == player2.color or board[x+3,y+3].shape == player2.shape:
+                        return 696969
+                    else:
+                        diagonalmin1.append(150)
                 else:
-                    diagonalmin1.append(150)
+                    diagonalmin1.append(50)
             else:
                 diagonalmin2.append(50)
 
@@ -264,11 +291,14 @@ def eval(state : State, n_player: int, nextMove : Tuple[int, int]) -> int: #heur
             else:
                 diagonalmin2.append(50)
         else: # player2
-            if board[x-2,y-2].color == player2.color or board[x-2,y-2].shape == player2.shape:
-                if board[x-3,y-3].color == player2.color or board[x-3,y-3].shape == player2.shape:
-                    return 696969
+            if board[x-1, y-1] == player2:
+                if board[x-2,y-2].color == player2.color or board[x-2,y-2].shape == player2.shape:
+                    if board[x-3,y-3].color == player2.color or board[x-3,y-3].shape == player2.shape:
+                        return 696969
+                    else:
+                        diagonalmin2.append(150)
                 else:
-                    diagonalmin2.append(150)
+                    diagonalmin2.append(50)
             else:
                 diagonalmin2.append(50)
 
@@ -279,15 +309,15 @@ def eval(state : State, n_player: int, nextMove : Tuple[int, int]) -> int: #heur
 
     # cek antara 1
     if y-2>=0 and x-2>=0 and y+1<board.col and x+1<board.row:
-        if (board[x+1,y+1].color == player2.color
-            and board[x-1,y-1].color == player2.color
-            and board[x-2,y-2].color == player2.color):
+        if ((board[x+1,y+1].color == player2.color or board[x+1,y+1].shape == player2.shape)
+            and (board[x-1,y-1].color == player2.color or board[x-1,y-1].shape == player2.shape)
+            and (board[x-2,y-2].color == player2.color or board[x-2,y-2].shape == player2.shape )):
             return 696969
     # cek antara 2
     if y+2<board.col and x+2<board.row and y-1>=0 and x-1>=0:
-        if (board[x-1,y-1].color == player2.color
-            and board[x+1,y+1].color == player2.color
-            and board[x+2,y+2].color == player2.color):
+        if ((board[x-1,y-1].color == player2.color or board[x-1,y-1].shape == player2.shape)
+            and (board[x+1,y+1].color == player2.color or board[x+1,y+1].shape == player2.shape)
+            and (board[x+2,y+2].color == player2.color or board[x+2,y+2].shape == player2.shape)):
             return 696969
 
     out = [horizontalval, vertikalval, diagonalplus, diagonalmin]
