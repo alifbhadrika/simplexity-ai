@@ -9,7 +9,7 @@ from typing import Tuple, List
 from copy import deepcopy
 
 
-class LocalSearch:
+class LocalSearchGroup44:
     def __init__(self):
         self.currValue = 0
 
