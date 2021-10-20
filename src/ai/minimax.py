@@ -49,9 +49,12 @@ def minimax(state : State, n_player:int, isMax, depth, a, b, maxDepth, FirstPlay
             return (eval(state, FirstPlayer)) #enter obj func here
 
     elif(depth < maxDepth):
+        prune = False
         if(isMax):
             best = -1000
             for c in range(state.board.col): #Check Available Move
+                if(prune):
+                    break
                 for r in range(state.board.row - 1,-1,-1):
                     if((state.board[r, c].shape == ShapeConstant.BLANK and r == state.board.row - 1) or (state.board[r, c].shape == ShapeConstant.BLANK and state.board[r + 1,c].shape != ShapeConstant.BLANK and r<state.board.row - 1 )):
                         piece = Piece(sep, GameConstant.PLAYER_COLOR[n_player])
@@ -64,13 +67,15 @@ def minimax(state : State, n_player:int, isMax, depth, a, b, maxDepth, FirstPlay
                         a = max(a,best)
                         ns.players[n_player].quota[sep] += 1
                         ns.board.set_piece(r,c,ShapeConstant.BLANK)
-                        if(b <= a):
-                            break
+                        if(b <= a): #edit this
+                            prune = True
             return best
 
         else : # minimizing
             best = 1000
             for c in range(state.board.col):
+                if(prune):
+                    break
                 for r in range(state.board.row - 1,-1,-1):
                     if((state.board[r, c].shape == ShapeConstant.BLANK and r == state.board.row - 1) or (state.board[r, c].shape == ShapeConstant.BLANK and state.board[r + 1,c].shape != ShapeConstant.BLANK and r<state.board.row - 1 )):
                         piece = Piece(sep, GameConstant.PLAYER_COLOR[n_player])
@@ -84,7 +89,7 @@ def minimax(state : State, n_player:int, isMax, depth, a, b, maxDepth, FirstPlay
                         ns.players[n_player].quota[sep] += 1
                         ns.board.set_piece(r,c,ShapeConstant.BLANK)
                         if(b <= a):
-                            break
+                            prune = True
             return best
 
 def eval(state : State, n_player: int) -> int: #obj func
@@ -263,8 +268,9 @@ class MinimaxGroup44:
             elif(state.players[n_player].quota[GameConstant.PLAYER2_SHAPE] == 0 and state.players[n_player].quota[GameConstant.PLAYER1_SHAPE] > 0 ):
                 sep = GameConstant.PLAYER1_SHAPE
 
+        lastIt = False
         found = False
-        while(not found and time() < self.thinking_time):
+        while(not lastIt and time() < self.thinking_time):
             for c in range(state.board.col): #Check Available Move
                 for r in range(state.board.row - 1,-1,-1):
                     if((state.board[r, c].shape == ShapeConstant.BLANK and r == state.board.row - 1) or (state.board[r, c].shape == ShapeConstant.BLANK and state.board[r + 1,c].shape != ShapeConstant.BLANK and r < state.board.row - 1 )) :
@@ -276,12 +282,13 @@ class MinimaxGroup44:
                         if(tmp >= best):
                             best = tmp
                             bestmove = (c,sep)
+                            found = True
                         ns.players[n_player].quota[sep] += 1
                         ns.board.set_piece(r,c,ShapeConstant.BLANK)
                     if(c == state.board.col - 1 and r == 0):
-                        found = True
+                        lastIt = True
 
-        if(not found): #Random move
+        if(not lastIt and not found): #Random move
             bestmove = (random.randint(0, state.board.col - 1), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE]))
             # print("Called Random")
         return bestmove
